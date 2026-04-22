@@ -17,16 +17,18 @@ function Dashboard() {
     const fetchData = async () => {
       try {
         const res = await axios.get(`${API}/api/dashboard`, {
-          headers: { Authorization: token }
+          headers: { Authorization: `Bearer ${token}` }   // ✅ FIX
         });
         setStudent(res.data);
       } catch (err) {
         console.error(err);
-        alert("Unauthorized");
+        alert("Unauthorized - Please login again");
       }
     };
 
-    fetchData();
+    if (token) {
+      fetchData();
+    }
   }, [token]);
 
   const updateCourse = async () => {
@@ -34,10 +36,11 @@ function Dashboard() {
       await axios.put(
         `${API}/api/update-course`,
         { course },
-        { headers: { Authorization: token } }
+        { headers: { Authorization: `Bearer ${token}` } }   // ✅ FIX
       );
       alert("Course Updated");
     } catch (err) {
+      console.error(err);
       alert("Failed to update course");
     }
   };
@@ -47,10 +50,11 @@ function Dashboard() {
       await axios.put(
         `${API}/api/update-password`,
         passwords,
-        { headers: { Authorization: token } }
+        { headers: { Authorization: `Bearer ${token}` } }   // ✅ FIX
       );
       alert("Password Updated");
     } catch (err) {
+      console.error(err);
       alert("Failed to update password");
     }
   };

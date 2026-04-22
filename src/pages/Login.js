@@ -5,7 +5,11 @@ import { useNavigate, Link } from "react-router-dom";
 const API = process.env.REACT_APP_API_URL;
 
 function Login() {
-  const [form, setForm] = useState({});
+  const [form, setForm] = useState({
+    email: "",
+    password: ""
+  });
+
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -18,11 +22,14 @@ function Login() {
     try {
       const res = await axios.post(`${API}/api/login`, form);
 
+      // ✅ store token
       localStorage.setItem("token", res.data.token);
+
+      alert("Login Successful");
       navigate("/dashboard");
     } catch (err) {
       console.error(err);
-      alert("Invalid Credentials");
+      alert(err?.response?.data?.msg || "Invalid Credentials");
     }
   };
 
@@ -31,8 +38,25 @@ function Login() {
       <h2>Login</h2>
 
       <form onSubmit={handleLogin}>
-        <input className="form-control my-2" name="email" placeholder="Email" onChange={handleChange} />
-        <input className="form-control my-2" type="password" name="password" placeholder="Password" onChange={handleChange} />
+        <input
+          className="form-control my-2"
+          name="email"
+          placeholder="Email"
+          value={form.email}
+          onChange={handleChange}
+          required
+        />
+
+        <input
+          className="form-control my-2"
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={form.password}
+          onChange={handleChange}
+          required
+        />
+
         <button className="btn btn-success">Login</button>
       </form>
 
