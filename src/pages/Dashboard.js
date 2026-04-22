@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+const API = process.env.REACT_APP_API_URL;
+
 function Dashboard() {
   const [student, setStudent] = useState({});
   const [course, setCourse] = useState("");
@@ -11,34 +13,48 @@ function Dashboard() {
 
   const token = localStorage.getItem("token");
 
-  // Fetch student data
   useEffect(() => {
-    axios.get("http://localhost:5000/api/dashboard", {
-      headers: { Authorization: token }
-    })
-    .then(res => setStudent(res.data))
-    .catch(() => alert("Unauthorized"));
-  }, []);
+    const fetchData = async () => {
+      try {
+        const res = await axios.get(`${API}/api/dashboard`, {
+          headers: { Authorization: token }
+        });
+        setStudent(res.data);
+      } catch (err) {
+        console.error(err);
+        alert("Unauthorized");
+      }
+    };
 
-  // Update Course
+    fetchData();
+  }, [token]);
+
   const updateCourse = async () => {
-    await axios.put("http://localhost:5000/api/update-course",
-      { course },
-      { headers: { Authorization: token } }
-    );
-    alert("Course Updated");
+    try {
+      await axios.put(
+        `${API}/api/update-course`,
+        { course },
+        { headers: { Authorization: token } }
+      );
+      alert("Course Updated");
+    } catch (err) {
+      alert("Failed to update course");
+    }
   };
 
-  // Update Password
   const updatePassword = async () => {
-    await axios.put("http://localhost:5000/api/update-password",
-      passwords,
-      { headers: { Authorization: token } }
-    );
-    alert("Password Updated");
+    try {
+      await axios.put(
+        `${API}/api/update-password`,
+        passwords,
+        { headers: { Authorization: token } }
+      );
+      alert("Password Updated");
+    } catch (err) {
+      alert("Failed to update password");
+    }
   };
 
-  // Logout
   const logout = () => {
     localStorage.removeItem("token");
     window.location.href = "/login";
@@ -48,28 +64,48 @@ function Dashboard() {
     <div className="container mt-5">
       <h2>Dashboard</h2>
 
-      <p><b>Name:</b> {student.name}</p>
-      <p><b>Email:</b> {student.email}</p>
-      <p><b>Course:</b> {student.course}</p>
+      <p><b>Name:</b> {student?.name}</p>
+      <p><b>Email:</b> {student?.email}</p>
+      <p><b>Course:</b> {student?.course}</p>
 
       <hr />
 
       <h4>Update Course</h4>
-      <input className="form-control my-2" placeholder="New Course" onChange={(e) => setCourse(e.target.value)} />
-      <button className="btn btn-warning" onClick={updateCourse}>Update Course</button>
+      <input
+        className="form-control my-2"
+        placeholder="New Course"
+        onChange={(e) => setCourse(e.target.value)}
+      />
+      <button className="btn btn-warning" onClick={updateCourse}>
+        Update Course
+      </button>
 
       <hr />
 
       <h4>Change Password</h4>
-      <input className="form-control my-2" placeholder="Old Password"
-        onChange={(e) => setPasswords({ ...passwords, oldPassword: e.target.value })} />
-      <input className="form-control my-2" placeholder="New Password"
-        onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })} />
-      <button className="btn btn-danger" onClick={updatePassword}>Update Password</button>
+      <input
+        className="form-control my-2"
+        placeholder="Old Password"
+        onChange={(e) =>
+          setPasswords({ ...passwords, oldPassword: e.target.value })
+        }
+      />
+      <input
+        className="form-control my-2"
+        placeholder="New Password"
+        onChange={(e) =>
+          setPasswords({ ...passwords, newPassword: e.target.value })
+        }
+      />
+      <button className="btn btn-danger" onClick={updatePassword}>
+        Update Password
+      </button>
 
       <hr />
 
-      <button className="btn btn-dark" onClick={logout}>Logout</button>
+      <button className="btn btn-dark" onClick={logout}>
+        Logout
+      </button>
     </div>
   );
 }

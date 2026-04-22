@@ -2,6 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 
+const API = process.env.REACT_APP_API_URL;
+
 function Login() {
   const [form, setForm] = useState({});
   const navigate = useNavigate();
@@ -14,12 +16,12 @@ function Login() {
     e.preventDefault();
 
     try {
-      const res = await axios.post("http://localhost:5000/api/login", form);
+      const res = await axios.post(`${API}/api/login`, form);
 
       localStorage.setItem("token", res.data.token);
-
       navigate("/dashboard");
     } catch (err) {
+      console.error(err);
       alert("Invalid Credentials");
     }
   };

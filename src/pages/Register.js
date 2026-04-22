@@ -2,6 +2,8 @@ import { useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
+const API = process.env.REACT_APP_API_URL;
+
 function Register() {
   const [form, setForm] = useState({
     name: "",
@@ -16,17 +18,21 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      await axios.post("http://localhost:5000/api/register", form);
+      const res = await axios.post(`${API}/api/register`, form);
       alert("Registered Successfully");
+      console.log(res.data);
     } catch (err) {
-      alert(err.response.data.msg);
+      console.error(err);
+      alert(err?.response?.data?.msg || "Registration failed");
     }
   };
 
   return (
     <div className="container mt-5">
       <h2>Register</h2>
+
       <form onSubmit={handleSubmit}>
         <input className="form-control my-2" name="name" placeholder="Name" onChange={handleChange} />
         <input className="form-control my-2" name="email" placeholder="Email" onChange={handleChange} />
